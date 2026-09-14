@@ -1,9 +1,10 @@
-import { ConstructorPage } from '@pages';
+import { Routes, Route } from 'react-router-dom';
+import { ConstructorPage, Feed, NotFound404 } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
 
 import { AppHeader } from '@components';
-import { Preloader } from '@ui';
+//import { Preloader } from '@ui';
 
 const App = () => {
   /** TODO: взять переменные из стора */
@@ -14,7 +15,16 @@ const App = () => {
   return (
     <div className={styles.app}>
       <AppHeader />
-      {isIngredientsLoading ? (
+      {/* это вставила я */}
+      <Routes>
+        {/* другие пути при необходимости */}
+        <Route path='/' element={<ConstructorPage />} />
+        <Route path='/feed' element={<Feed />} />
+        <Route path='/*' element={<NotFound404 />} />
+      </Routes>
+
+      {/* это было в стартере */}
+      {/* {isIngredientsLoading ? (
         <Preloader />
       ) : error ? (
         <div className={`${styles.error} text text_type_main-medium pt-4`}>
@@ -26,7 +36,7 @@ const App = () => {
         <div className={`${styles.title} text text_type_main-medium pt-4`}>
           Нет игредиентов
         </div>
-      )}
+      )} */}
     </div>
   );
 };
