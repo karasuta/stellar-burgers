@@ -10,9 +10,6 @@ const initialState: TConstructorState = {
   ingredients: []
 };
 
-let counter = 0;
-const genId = () => `constructor-${counter++}`;
-
 export const constructorSlice = createSlice({
   name: 'constructorBurger',
   initialState,
@@ -26,7 +23,7 @@ export const constructorSlice = createSlice({
         }
       },
       prepare: (ingredient: TIngredient) => ({
-        payload: { ...ingredient, id: genId() }
+        payload: { ...ingredient, id: crypto.randomUUID() }
       })
     },
     removeIngredient: (state, action: PayloadAction<string>) => {
@@ -48,7 +45,17 @@ export const constructorSlice = createSlice({
     }
   },
   selectors: {
-    selectConstructorItems: (state) => state
+    selectConstructorItems: (state) => state,
+    selectIngredientCount:
+      (state: TConstructorState) => (ingredientId: string) => {
+        const fromIngredients = state.ingredients.filter(
+          (i) => i._id === ingredientId
+        ).length;
+        const fromBun = state.bun?._id === ingredientId ? 1 : 0;
+        return fromIngredients + fromBun;
+      },
+    selectBun: (state) => state.bun,
+    selectIngredients: (state) => state.ingredients
   }
 });
 
