@@ -6,26 +6,42 @@ import {
   useSelector,
   useDispatch,
   selectFeedOrders,
-  selectFeedError,
   selectFeedLoading
 } from '../../services/store';
 import { fetchFeed } from '../../services/slices/feedSlice';
 
 export const Feed: FC = () => {
-  /** TODO: взять переменную из стора */
   const dispatch = useDispatch();
   const orders: TOrder[] = useSelector(selectFeedOrders);
   const loading = useSelector(selectFeedLoading);
-  const error = useSelector(selectFeedError);
 
   useEffect(() => {
-    dispatch(fetchFeed());
+    dispatch(fetchFeed())
+      .unwrap()
+      .catch((err) => {
+        console.error(
+          'Ошибка при загрузке ленты заказов:',
+          err instanceof Error ? err.message : err
+        );
+      });
   }, [dispatch]);
 
-  if (loading && !orders.length) {
+  if (loading) {
     return <Preloader />;
   }
   return (
-    <FeedUI orders={orders} handleGetFeeds={() => dispatch(fetchFeed())} />
+    <FeedUI
+      orders={orders}
+      handleGetFeeds={() =>
+        dispatch(fetchFeed())
+          .unwrap()
+          .catch((err) =>
+            console.error(
+              'Ошибка при повторной загрузке ленты:',
+              err instanceof Error ? err.message : err
+            )
+          )
+      }
+    />
   );
 };

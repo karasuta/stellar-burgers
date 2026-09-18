@@ -21,6 +21,8 @@
 
 .detailPageWrap {
   margin: 120px auto;
+  max-height: calc(100vh - 160px); 
+  overflow-y: auto;
 }
 
 .detailHeader {
@@ -34,4 +36,19 @@
 .error {
   margin: 0 auto;
   color: red;
+}
+
+
+/* .orderNumberFullScreen {
+  font-size: 3rem;           
+  line-height: 1.2;
+  font-weight: 700;          
+  margin-bottom: 24px;     
+} */
+
+.orderNumberModalLeft {
+  align-self: flex-start;;         
+  display: block;           
+  margin-bottom: 16px;
+  
 }

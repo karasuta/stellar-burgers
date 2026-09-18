@@ -2,6 +2,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import ingredientsReducer from './slices/ingredientsSlice';
 import constructorReducer from './slices/constructorSlice';
 import feedReducer from './slices/feedSlice';
+import userReducer from './slices/userSlice';
+import orderReducer from './slices/orderSlice';
 
 import {
   TypedUseSelectorHook,
@@ -12,7 +14,9 @@ import {
 const rootReducer = combineReducers({
   ingredients: ingredientsReducer,
   constructorBurger: constructorReducer,
-  feed: feedReducer
+  feed: feedReducer,
+  user: userReducer,
+  order: orderReducer
 });
 
 const store = configureStore({
@@ -38,6 +42,13 @@ export const selectFeedOrders = (state: RootState) => state.feed.orders;
 export const selectFeedTotal = (state: RootState) => state.feed.total;
 export const selectFeedTotalToday = (state: RootState) => state.feed.totalToday;
 export const selectFeedLoading = (state: RootState) => state.feed.loading;
-export const selectFeedError = (state: RootState) => state.feed.error;
+
+export const selectUser = (state: RootState) => state.user.user;
+export const selectUserOrders = (state: RootState) => state.user.orders;
+export const selectIsLoadingOrders = (state: RootState) =>
+  state.user.isLoadingOrders;
+export const selectErrorOrders = (state: RootState) => state.user.ordersError;
+export const selectOrderByNumber = (state: RootState) =>
+  state.order.orderByNumber;
 
 export default store;

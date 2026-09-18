@@ -8,31 +8,18 @@ interface FeedState {
   total: number;
   totalToday: number;
   loading: boolean;
-  error: string | null;
 }
 const initialState: FeedState = {
   orders: [],
   total: 0,
   totalToday: 0,
-  loading: false,
-  error: null
+  loading: false
 };
 
-export const fetchFeed = createAsyncThunk<
-  TFeedsResponse,
-  void,
-  { rejectValue: string }
->('feed/fetchFeed', async (_, { rejectWithValue }) => {
-  try {
-    return await getFeedsApi();
-  } catch (err) {
-    const message =
-      typeof err === 'object' && err !== null && 'message' in err
-        ? (err as { message: string }).message
-        : 'Не удалось получить ленту заказов';
-    return rejectWithValue(message);
-  }
-});
+export const fetchFeed = createAsyncThunk<TFeedsResponse, void>(
+  'feed/fetchFeed',
+  async () => await getFeedsApi()
+);
 
 const feedSlice = createSlice({
   name: 'feed',
@@ -42,7 +29,6 @@ const feedSlice = createSlice({
     builder
       .addCase(fetchFeed.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(fetchFeed.fulfilled, (state, action) => {
         state.loading = false;
@@ -53,7 +39,6 @@ const feedSlice = createSlice({
 
       .addCase(fetchFeed.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
       });
   }
 });

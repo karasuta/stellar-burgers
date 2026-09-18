@@ -1,16 +1,16 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { selectUser, useSelector, useDispatch } from '../../services/store';
+import { updateUserApi } from '@api';
+import { setUser } from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name ?? '',
+    email: user?.email ?? '',
     password: ''
   });
 
@@ -27,15 +27,30 @@ export const Profile: FC = () => {
     formValue.email !== user?.email ||
     !!formValue.password;
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const updates: Partial<{ name: string; email: string; password: string }> =
+      {};
+    if (formValue.name !== (user?.name ?? '')) {
+      updates.name = formValue.name;
+    }
+    if (formValue.password) updates.password = formValue.password;
+    if (!Object.keys(updates).length) return;
+    try {
+      const response = await updateUserApi(updates);
+      dispatch(setUser(response.user));
+      setFormValue((prev) => ({ ...prev, password: '' }));
+    } catch (err) {
+      console.error('Ошибка обновления профиля:', err);
+    }
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name ?? '',
+      email: user?.email ?? '',
       password: ''
     });
   };
@@ -56,6 +71,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };
