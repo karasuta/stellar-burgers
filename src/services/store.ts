@@ -44,11 +44,27 @@ export const selectFeedTotalToday = (state: RootState) => state.feed.totalToday;
 export const selectFeedLoading = (state: RootState) => state.feed.loading;
 
 export const selectUser = (state: RootState) => state.user.user;
-export const selectUserOrders = (state: RootState) => state.user.orders;
+
+export const selectUserOrders = (state: RootState) => state.order.orders;
 export const selectIsLoadingOrders = (state: RootState) =>
-  state.user.isLoadingOrders;
-export const selectErrorOrders = (state: RootState) => state.user.ordersError;
+  state.order.isLoadingOrders;
+export const selectErrorOrders = (state: RootState) => state.order.ordersError;
+
 export const selectOrderByNumber = (state: RootState) =>
   state.order.orderByNumber;
+export const selectLoginError = (state: RootState) => state.user.loginError;
+export const selectIsLoggingIn = (state: RootState) => state.user.isLoggingIn;
+export const selectRegisterError = (state: RootState) =>
+  state.user.registerError;
+export const selectIsRegistering = (state: RootState) =>
+  state.user.isRegistering;
+export const selectProfileUpdateError = (state: RootState) =>
+  state.user.profileUpdateError;
+export const selectIsUpdatingProfile = (state: RootState) =>
+  state.user.isUpdatingProfile;
+export const selectIsAuthChecked = (state: RootState) =>
+  state.user.isAuthChecked;
+export const selectIsAuthenticated = (state: RootState) =>
+  state.user.isAuthenticated;
 
 export default store;

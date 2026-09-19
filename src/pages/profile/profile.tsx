@@ -1,12 +1,18 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-import { selectUser, useSelector, useDispatch } from '../../services/store';
-import { updateUserApi } from '@api';
-import { setUser } from '../../services/slices/userSlice';
+import { TRegisterData } from '@api';
+import {
+  selectUser,
+  useSelector,
+  useDispatch,
+  selectProfileUpdateError
+} from '../../services/store';
+import { updateProfile } from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
   const user = useSelector(selectUser);
   const dispatch = useDispatch();
+  const profileUpdateError = useSelector(selectProfileUpdateError);
 
   const [formValue, setFormValue] = useState({
     name: user?.name ?? '',
@@ -15,11 +21,11 @@ export const Profile: FC = () => {
   });
 
   useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
+    setFormValue({
+      name: user?.name ?? '',
+      email: user?.email ?? '',
+      password: ''
+    });
   }, [user]);
 
   const isFormChanged =
@@ -27,23 +33,19 @@ export const Profile: FC = () => {
     formValue.email !== user?.email ||
     !!formValue.password;
 
-  const handleSubmit = async (e: SyntheticEvent) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
 
-    const updates: Partial<{ name: string; email: string; password: string }> =
-      {};
+    const updates: Partial<TRegisterData> = {};
     if (formValue.name !== (user?.name ?? '')) {
       updates.name = formValue.name;
     }
+    if (formValue.email !== (user?.email ?? '')) {
+      updates.email = formValue.email;
+    }
     if (formValue.password) updates.password = formValue.password;
     if (!Object.keys(updates).length) return;
-    try {
-      const response = await updateUserApi(updates);
-      dispatch(setUser(response.user));
-      setFormValue((prev) => ({ ...prev, password: '' }));
-    } catch (err) {
-      console.error('Ошибка обновления профиля:', err);
-    }
+    dispatch(updateProfile(updates));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
@@ -69,6 +71,7 @@ export const Profile: FC = () => {
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
+      updateUserError={profileUpdateError ?? ''}
     />
   );
 };

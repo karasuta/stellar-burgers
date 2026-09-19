@@ -1,35 +1,35 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { LoginUI } from '@ui-pages';
-import { useDispatch } from '../../services/store';
-import { login } from '../../services/slices/userSlice';
-import { loginUserApi } from '@api';
+import {
+  useDispatch,
+  useSelector,
+  selectLoginError
+} from '../../services/store';
+import { loginUser } from '../../services/slices/userSlice';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Login: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorText, setErrorText] = useState('');
+  const loginError = useSelector(selectLoginError);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = async (e: SyntheticEvent) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    setErrorText('');
-    try {
-      const response = await loginUserApi({ email, password });
-      dispatch(
-        login({
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-          user: response.user
-        })
-      );
-    } catch (err) {
-      setErrorText('Неверный логин или пароль');
-    }
+    dispatch(loginUser({ email, password }))
+      .unwrap()
+      .then(() => {
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      })
+      .catch(() => {});
   };
 
   return (
     <LoginUI
-      errorText={errorText}
+      errorText={loginError ?? ''}
       email={email}
       setEmail={setEmail}
       password={password}

@@ -38,14 +38,6 @@
   color: red;
 }
 
-
-/* .orderNumberFullScreen {
-  font-size: 3rem;           
-  line-height: 1.2;
-  font-weight: 700;          
-  margin-bottom: 24px;     
-} */
-
 .orderNumberModalLeft {
   align-self: flex-start;;         
   display: block;           

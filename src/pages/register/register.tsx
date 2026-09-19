@@ -1,41 +1,28 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
-import { registerUserApi } from '@api';
-import { useDispatch } from '../../services/store';
-import { login } from '../../services/slices/userSlice';
+import {
+  useDispatch,
+  useSelector,
+  selectRegisterError
+} from '../../services/store';
+import { registerUser } from '../../services/slices/userSlice';
 
 export const Register: FC = () => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorText, setErrorText] = useState('');
 
   const dispatch = useDispatch();
+  const registerError = useSelector(selectRegisterError);
 
-  const handleSubmit = async (e: SyntheticEvent) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    setErrorText('');
-    try {
-      const response = await registerUserApi({
-        email,
-        name: userName,
-        password
-      });
-      dispatch(
-        login({
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-          user: response.user
-        })
-      );
-    } catch (err) {
-      setErrorText('Не удалось зарегистрироваться. Проверьте данные.');
-    }
+    dispatch(registerUser({ name: userName, email, password }));
   };
 
   return (
     <RegisterUI
-      errorText={errorText}
+      errorText={registerError ?? ''}
       email={email}
       userName={userName}
       password={password}

@@ -8,7 +8,7 @@ import {
   selectIsLoadingOrders,
   selectErrorOrders
 } from '../../services/store';
-import { fetchUserOrders } from '../../services/slices/userSlice';
+import { fetchUserOrders } from '../../services/slices/orderSlice';
 import { Preloader } from '@ui';
 
 export const ProfileOrders: FC = () => {

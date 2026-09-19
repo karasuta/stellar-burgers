@@ -11,13 +11,17 @@ export interface IOrderState {
   orderModalData: TOrder | null;
   orders: TOrder[];
   orderByNumber: TOrder | null;
+  isLoadingOrders: boolean;
+  ordersError: string | null;
 }
 
 const initialState: IOrderState = {
   orderRequest: false,
   orderModalData: null,
   orders: [],
-  orderByNumber: null
+  orderByNumber: null,
+  isLoadingOrders: false,
+  ordersError: null
 };
 
 export const createOrder = createAsyncThunk<TOrder, string[]>(
@@ -45,12 +49,9 @@ export const createOrder = createAsyncThunk<TOrder, string[]>(
   }
 );
 
-export const fetchOrders = createAsyncThunk<TOrder[]>(
-  'order/fetchOrders',
-  async () => {
-    const orders = await getOrdersApi();
-    return orders;
-  }
+export const fetchUserOrders = createAsyncThunk<TOrder[]>(
+  'order/fetchUserOrders',
+  async () => await getOrdersApi()
 );
 
 export const fetchOrderByNumber = createAsyncThunk<TOrder, number>(
@@ -67,6 +68,9 @@ export const orderSlice = createSlice({
   reducers: {
     clearOrderModal: (state) => {
       state.orderModalData = null;
+    },
+    clearOrderByNumber: (state) => {
+      state.orderByNumber = null;
     }
   },
   extraReducers: (builder) => {
@@ -81,8 +85,15 @@ export const orderSlice = createSlice({
       .addCase(createOrder.rejected, (state) => {
         state.orderRequest = false;
       })
-      .addCase(fetchOrders.fulfilled, (state, action) => {
+
+      .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.orders = action.payload;
+        state.isLoadingOrders = false;
+      })
+      .addCase(fetchUserOrders.rejected, (state, action) => {
+        state.ordersError =
+          action.error.message ?? 'Не удалось загрузить заказы';
+        state.isLoadingOrders = false;
       })
       .addCase(fetchOrderByNumber.fulfilled, (state, action) => {
         state.orderByNumber = action.payload;
@@ -90,5 +101,5 @@ export const orderSlice = createSlice({
   }
 });
 
-export const { clearOrderModal } = orderSlice.actions;
+export const { clearOrderModal, clearOrderByNumber } = orderSlice.actions;
 export default orderSlice.reducer;

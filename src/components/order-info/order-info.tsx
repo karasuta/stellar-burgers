@@ -10,7 +10,10 @@ import {
   selectIngredientsItems,
   selectOrderByNumber
 } from '../../services/store';
-import { fetchOrderByNumber } from '../../services/slices/orderSlice';
+import {
+  fetchOrderByNumber,
+  clearOrderByNumber
+} from '../../services/slices/orderSlice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
@@ -30,6 +33,13 @@ export const OrderInfo: FC = () => {
       dispatch(fetchOrderByNumber(Number(number)));
     }
   }, [orderData, number, dispatch]);
+
+  useEffect(
+    () => () => {
+      dispatch(clearOrderByNumber());
+    },
+    [dispatch]
+  );
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
