@@ -1,25 +1,31 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { TRegisterData } from '@api';
+import {
+  selectUser,
+  useSelector,
+  useDispatch,
+  selectProfileUpdateError
+} from '../../services/store';
+import { updateProfile } from '../../services/slices/userSlice';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+  const profileUpdateError = useSelector(selectProfileUpdateError);
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name ?? '',
+    email: user?.email ?? '',
     password: ''
   });
 
   useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
+    setFormValue({
+      name: user?.name ?? '',
+      email: user?.email ?? '',
+      password: ''
+    });
   }, [user]);
 
   const isFormChanged =
@@ -29,13 +35,24 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const updates: Partial<TRegisterData> = {};
+    if (formValue.name !== (user?.name ?? '')) {
+      updates.name = formValue.name;
+    }
+    if (formValue.email !== (user?.email ?? '')) {
+      updates.email = formValue.email;
+    }
+    if (formValue.password) updates.password = formValue.password;
+    if (!Object.keys(updates).length) return;
+    dispatch(updateProfile(updates));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name ?? '',
+      email: user?.email ?? '',
       password: ''
     });
   };
@@ -54,8 +71,7 @@ export const Profile: FC = () => {
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
+      updateUserError={profileUpdateError ?? ''}
     />
   );
-
-  return null;
 };

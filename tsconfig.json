@@ -17,6 +17,7 @@
     "jsx": "react-jsx",
     "types": ["node", "jest"],
     "baseUrl": ".",
+    //"ignoreDeprecations": "6.0",
     "paths": {
       "@pages": ["src/pages"],
       "@components": ["src/components"],
