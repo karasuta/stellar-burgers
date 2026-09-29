@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { TUser } from '@utils-types';
 import { setCookie, getCookie, deleteCookie } from '../../utils/cookie';
 import {
@@ -10,6 +10,17 @@ import {
   TLoginData,
   logoutApi
 } from '@api';
+
+const ERROR_MAPPING: Record<string, string> = {
+  'email or password are incorrect': 'Неверный email или пароль',
+  'User already exists': 'Пользователь с таким email уже существует',
+  'Failed to fetch': 'Нет соединения с сервером. Проверьте интернет'
+};
+
+const getUserFriendlyError = (rawError: string | undefined): string => {
+  if (!rawError) return 'Произошла ошибка. Попробуйте позже';
+  return ERROR_MAPPING[rawError] ?? rawError;
+};
 
 interface UserState {
   user: TUser | null;
@@ -125,11 +136,7 @@ export const logoutUser = createAsyncThunk('user/logout', async () => {
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    setUser: (state, action: PayloadAction<TUser>) => {
-      state.user = action.payload;
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
@@ -144,7 +151,7 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoggingIn = false;
-        state.loginError = action.payload ?? 'Ошибка входа';
+        state.loginError = getUserFriendlyError(action.payload);
       })
       .addCase(registerUser.pending, (state) => {
         state.isRegistering = true;
@@ -158,7 +165,7 @@ export const userSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isRegistering = false;
-        state.registerError = action.payload ?? 'Ошибка регистрации';
+        state.registerError = getUserFriendlyError(action.payload);
       })
 
       .addCase(updateProfile.pending, (state) => {
@@ -171,8 +178,7 @@ export const userSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.isUpdatingProfile = false;
-        state.profileUpdateError =
-          action.payload ?? 'Ошибка обновления профиля';
+        state.profileUpdateError = getUserFriendlyError(action.payload);
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
@@ -193,5 +199,4 @@ export const userSlice = createSlice({
   }
 });
 
-export const { setUser } = userSlice.actions;
 export default userSlice.reducer;

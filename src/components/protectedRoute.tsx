@@ -1,10 +1,14 @@
 import { Navigate, useLocation, Outlet } from 'react-router-dom';
-import { useSelector } from '../services/store';
+import {
+  useSelector,
+  selectIsAuthenticated,
+  selectIsAuthChecked
+} from '../services/store';
 import { Preloader } from '@ui';
 
 export const ProtectedRoute = () => {
-  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  const isAuthChecked = useSelector((state) => state.user.isAuthChecked);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAuthChecked = useSelector(selectIsAuthChecked);
   const location = useLocation();
 
   if (!isAuthChecked) {

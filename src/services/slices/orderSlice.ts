@@ -86,6 +86,10 @@ export const orderSlice = createSlice({
         state.orderRequest = false;
       })
 
+      .addCase(fetchUserOrders.pending, (state, action) => {
+        state.isLoadingOrders = true;
+        state.ordersError = null;
+      })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.orders = action.payload;
         state.isLoadingOrders = false;
