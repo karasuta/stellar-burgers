@@ -29,5 +29,5 @@
       "@selectors": ["src/services/selectors"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "playwright.config.ts", "tests/**/*.ts", "tests/**/*.tsx"]
 }
